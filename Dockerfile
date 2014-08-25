@@ -1,4 +1,5 @@
 FROM phusion/passenger-ruby20
+MAINTAINER Andrew Carpenter <andrew@criticaljuncture.org>
 
 # Set correct environment variables.
 ENV HOME /root
@@ -25,13 +26,11 @@ ADD docker/passenger.conf /etc/nginx/sites-enabled/default
 ADD docker/passenger-env.conf /etc/nginx/main.d/env.conf
 
 # Startup scripts
-ADD docker/migrate.sh /etc/my_init.d/migrate.sh
-RUN chmod +x /etc/my_init.d/migrate.sh
+ADD docker/startup /etc/my_init.d/
+RUN chmod +x /etc/my_init.d/*
 
 ADD . /home/app/
 RUN chown -R app:app -R /home/app &&\
   chmod -R g+x,o+x /home/app
 
 RUN su app -c "bundle exec rake assets:precompile"
-
-RUN /usr/sbin/enable_insecure_key
